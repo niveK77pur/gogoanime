@@ -81,7 +81,7 @@ s = requests.Session()
 query = f'{ROOT_URL}/search.html?keyword=' + "+".join(sys.argv[1:])
 soup = getSoup(s, query)
 
-# get list of animes that were found
+# Get list of animes that were found -------------------------------------------
 anime_list = []
 ul = soup.find('ul', class_='items')
 for lst,rls in zip(ul.find_all('p', class_='name'), ul.find_all('p', class_='released')):
@@ -94,7 +94,7 @@ if not anime_list:
     print("Exiting.")
     sys.exit(1)
 
-# query user to pick an anime
+# Query user to pick an anime --------------------------------------------------
 for i, (name, _, year) in enumerate(anime_list):
     print("{:5} | {} ({})".format(i,name,year))
 while True:
@@ -127,7 +127,7 @@ links_file = f'{folder}/links.txt'
 if os.path.exists(links_file):
     with open(links_file, 'r') as f:
         links_file_contents = f.read()
-    # extract existing episode numbers (tightly linked to who file is written/formatted)
+    # extract existing episode numbers (tightly linked to how file is written/formatted)
     links_file_episodes = list(map(int, re.findall(r'out=.*ep(\d+).*?\n', links_file_contents)))
 else:
     links_file_episodes = []
@@ -139,11 +139,6 @@ for ep in range(ep_start, ep_end):
 if len(episodes['gogoanime']) == 0:
     print("No missing episodes to download. Exiting.")
     sys.exit(0)
-
-#  episodes['gogoanime'] = [
-#      re.sub(r'category/(.+)', r'\1-episode-'+str(ep+1), url)
-#      for ep in range(ep_start, ep_end)
-#      ]
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #                  Get streamani/vidstream download page links
@@ -159,32 +154,26 @@ for episode in episodes['gogoanime']:
     name = re.sub(r'episode-(\d+)$', lambda m: 'ep{:>03}'.format(m.group(1)), name)
     episodes['vidstream'].append((name,link))
 
-print(episodes['gogoanime'])
-print(episodes['vidstream'])
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #                    Access download page and get mp4 links
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
+# Selenium set-up --------------------------------------------------------------
 print("Setting up selenium FireFox browser ...")
+
 firefox_options = FirefoxOptions()
 firefox_options.add_argument("--headless")
 firefox_options.add_argument("--private-window")
 
 browser = webdriver.Firefox(options = firefox_options)
 
+# Get download links -----------------------------------------------------------
 print('Extracting video links ...')
 
-# TODO: selenium to execute captcha function => will make download buttons appear
-# https://stackoverflow.com/questions/3232904/using-recaptcha-on-localhost
 for n,episode in episodes['vidstream']:
     #  soup = getSoup(s, episode, headers=headers, cookies=cookies)
     soup = getDownloadPageHTML(browser, episode)
-    #  if len(soup.findAll(string=re.compile('captcha', re.IGNORECASE))) > 0:
-    #      print("Captcha triggered. Exiting.")
-    #      with open("/tmp/gogoanime.html", 'w') as f:
-    #          f.write(str(soup))
-    #      sys.exit(2)
     # find link with highest resolution
     links = soup.find_all('div', class_='dowload')
     # filter out links without a resolution (i.e. has to contain 360P)
@@ -219,6 +208,4 @@ except FileExistsError:
 with open(links_file, 'a') as f:
     f.write('\n'.join([ f'{link}\n    out={name}\n    referer={episode}'
         for name,link,episode in episodes['mp4']]))
-    #  f.write('\n'.join([ f'{link}\n    out={name}\n    referer={episode}'
-    #      for name,link,episode in episodes['mp4']]))
     print(f"Links written to:\n   {links_file}")
