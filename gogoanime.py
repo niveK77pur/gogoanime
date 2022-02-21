@@ -34,6 +34,9 @@ cookies = {
     #  'prefetchAd_3386133': 'true',
 }
 
+# Download Location ------------------------------------------------------------
+download_folder = os.environ["HOME"] + '/Videos/Anime'
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #                                    Set-up
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -60,7 +63,7 @@ def getDownloadPageHTML(browser, url):
         raise
 
 #  Root URL of gogoanime -------------------------------------------------------
-ROOT_URL = "https://gogoanime.cm"
+ROOT_URL = "https://gogoanime.so"
 
 #  Set up some variables -------------------------------------------------------
 episodes = {
@@ -122,7 +125,7 @@ soup = getSoup(s, url)
 ep_start = int(soup.find('a', class_='active').get('ep_start'))
 ep_end = int(soup.find('a', class_='active').get('ep_end'))
 
-folder = '{}-{}'.format(re.search(r'[\w-]+$', url).group(), year)
+folder = '{}/{}-{}'.format(download_folder, re.search(r'[\w-]+$', url).group(), year)
 links_file = f'{folder}/links.txt'
 if os.path.exists(links_file):
     with open(links_file, 'r') as f:
@@ -200,11 +203,10 @@ browser.quit()
 #                              Write links to file
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-try:
-    os.mkdir(folder)
-except FileExistsError:
-    pass
+# Create download directory (if non-existant) ----------------------------------
+os.makedirs(folder, exist_ok=True)
 
+# Write links to file ----------------------------------------------------------
 with open(links_file, 'a') as f:
     f.write('\n'.join([ f'{link}\n    out={name}\n    referer={episode}'
         for name,link,episode in episodes['mp4']]))
