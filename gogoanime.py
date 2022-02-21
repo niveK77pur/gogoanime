@@ -8,6 +8,8 @@ import re
 import os
 
 from selenium import webdriver
+# use 'selenium-wire' package to modify headers
+#  from seleniumwire import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
@@ -27,7 +29,7 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101 Firefox/96.0',
 }
 cookies = {
-    'cf_clearance': 'a8e8039fcefafd6a515195186980c54399b80c4f-1626262802-0-250',
+    #  'cf_clearance': 'a8e8039fcefafd6a515195186980c54399b80c4f-1626262802-0-250',
     #  'prefetchAd_4732994': 'true',
     #  'prefetchAd_3386133': 'true',
 }
@@ -134,7 +136,6 @@ for ep in range(ep_start, ep_end):
     if ep+1 in links_file_episodes:
         continue # do not include existing episodes
     episodes['gogoanime'].append(re.sub(r'category/(.+)', r'\1-episode-'+str(ep+1), url))
-    break ##TODO: REMOVE
 if len(episodes['gogoanime']) == 0:
     print("No missing episodes to download. Exiting.")
     sys.exit(0)
@@ -158,11 +159,12 @@ for episode in episodes['gogoanime']:
     name = re.sub(r'episode-(\d+)$', lambda m: 'ep{:>03}'.format(m.group(1)), name)
     episodes['vidstream'].append((name,link))
 
+print(episodes['gogoanime'])
+print(episodes['vidstream'])
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #                    Access download page and get mp4 links
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-print('Extracting video links ...')
 
 print("Setting up selenium FireFox browser ...")
 firefox_options = FirefoxOptions()
@@ -171,23 +173,29 @@ firefox_options.add_argument("--private-window")
 
 browser = webdriver.Firefox(options = firefox_options)
 
+print('Extracting video links ...')
+
 # TODO: selenium to execute captcha function => will make download buttons appear
 # https://stackoverflow.com/questions/3232904/using-recaptcha-on-localhost
 for n,episode in episodes['vidstream']:
     #  soup = getSoup(s, episode, headers=headers, cookies=cookies)
-    print("Extracting {} ...".format(episode))
     soup = getDownloadPageHTML(browser, episode)
-    """
-    if len(soup.findAll(string=re.compile('captcha', re.IGNORECASE))) > 0:
-        print("Captcha triggered. Exiting.")
-        with open("/tmp/gogoanime.html", 'w') as f:
-            f.write(str(soup))
-        sys.exit(2)
-    """
+    #  if len(soup.findAll(string=re.compile('captcha', re.IGNORECASE))) > 0:
+    #      print("Captcha triggered. Exiting.")
+    #      with open("/tmp/gogoanime.html", 'w') as f:
+    #          f.write(str(soup))
+    #      sys.exit(2)
     # find link with highest resolution
     links = soup.find_all('div', class_='dowload')
     # filter out links without a resolution (i.e. has to contain 360P)
     links_episodes = [ l for l in links if re.search("[0-9]+P", l.text) ]
+    if len(links_episodes) == 0:
+        print('Something went wrong, no download links found.')
+        debug_html = "/tmp/gogoanime.html"
+        with open(debug_html, 'w') as f:
+            f.write(str(soup))
+        print(f'Page written to {debug_html} for debugging.')
+        sys.exit(2)
     # sort according to resolution text
     link_maxres = sorted(links_episodes,
             key=(lambda l: re.search(r"([0-9]+)P", l.text).group(1))

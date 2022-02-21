@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from selenium import webdriver
+#  from seleniumwire import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
