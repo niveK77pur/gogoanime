@@ -1,7 +1,27 @@
-Extract MP4 video file links from 'www.gogoanime.so'
-(or wheverever this points to)
+# Installation
+
+## Install Python dependencies
+
+The dependencies are managed using [pipenv](https://pypi.org/project/pipenv/). Check <https://realpython.com/pipenv-guide/> for a nice introduction to the tool.
+
+```python
+pipenv install
+```
+
+## Install System dependencies
+
+Since we are relying on [selenium] to extract the links, you also need to install the corresponding drivers and browsers. On KDE Neon (which is based on Ubuntu) you can do as follows.
+
+```bash
+# apt install firefox firefox-geckodriver
+```
 
 # Using the script
+
+
+
+Extract MP4 video file links from 'www.gogoanime.so'
+(or wheverever this points to)
 
 Please also check the following section "About the implementation".
 
@@ -52,7 +72,7 @@ For downloading with Aria2:
     links are stored.
 
     # aria2c -i links.txt -c -x12 -s12 -k10M --max-overall-download-limit=3M
-
+    
     Flags are as follows:
         -i  --input-file                    Where the URLs are stored
         -c  --continue                      Resume on partially downloaded files
