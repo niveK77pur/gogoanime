@@ -152,7 +152,29 @@ print('Extracting download page links ...')
 
 # from the yellow download button
 for episode in episodes['gogoanime']:
-    link = getSoup(s, episode).find('li', class_='dowloads').find('a').get('href')
+    max_retries = 1
+    for try_count in range(max_retries):
+        # if the constructed gogoanime episode link contains no download
+        # button (i.e. 404 page not found), retry with a variant of the link
+        try:
+            gogosoup = getSoup(s, episode)
+            link = gogosoup.find('li', class_='dowloads').find('a').get('href')
+        except AttributeError:
+            if try_count > max_tries:
+                # if all possibilities are exhausted, raise the error for
+                # manual inspection
+                raise
+            # a field that appears at a 404 page
+            entry_title = gogosoup.find(class_='entry-title')
+            # 1st attempt: 2nd-season -> season-2, 23rd-season -> season-23
+            if try_count == 0 and entry_title and entry_title.text == '404':
+                episode = re.sub(r'(\d+)..-season', r'season-\1', episode)
+            else:
+                raise
+            # more attempts to be added in the future if needed; update
+            # 'max_retries' variable according to the number of tries
+        else:
+            break
     name = re.search(r'[\w-]+$', episode).group()
     # change "episode-x" to "ep00x" (add leading 0s for fixed width numbers)
     name = re.sub(r'episode-(\d+)$', lambda m: 'ep{:>03}'.format(m.group(1)), name)
