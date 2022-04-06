@@ -153,14 +153,14 @@ print('Extracting download page links ...')
 # from the yellow download button
 for episode in episodes['gogoanime']:
     max_retries = 1
-    for try_count in range(max_retries):
+    for try_count in range(max_retries+1):
         # if the constructed gogoanime episode link contains no download
         # button (i.e. 404 page not found), retry with a variant of the link
         try:
             gogosoup = getSoup(s, episode)
             link = gogosoup.find('li', class_='dowloads').find('a').get('href')
         except AttributeError:
-            if try_count > max_tries:
+            if try_count > max_retries:
                 # if all possibilities are exhausted, raise the error for
                 # manual inspection
                 raise
