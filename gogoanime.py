@@ -90,7 +90,8 @@ ul = soup.find('ul', class_='items')
 for lst,rls in zip(ul.find_all('p', class_='name'), ul.find_all('p', class_='released')):
     link = ROOT_URL + lst.find('a').get('href')
     name = lst.find('a').get('title')
-    year = re.search(r'\d+', rls.text).group()
+    year_text = re.search(r'\d+', rls.text)
+    year = year_text.group() if year_text else "n/a"
     anime_list.append((name, link, year))
 if not anime_list:
     print("No anime was found with keyword: '{}'".format(" ".join(sys.argv[1:])))
