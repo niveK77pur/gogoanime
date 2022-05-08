@@ -212,9 +212,9 @@ for n,episode in episodes['vidstream']:
         print(f'Page written to {debug_html} for debugging.')
         sys.exit(2)
     # sort according to resolution text
-    link_maxres = sorted(links_episodes,
+    link_maxres = max(links_episodes,
             key=(lambda l: int(re.search(r"([0-9]+)P", l.text).group(1)))
-            )[0]
+            )
     link = link_maxres.find('a').get('href')
     print(f"Link found for episode:\n\tEpisode: {episode}\n\tLink: {link}")
     print(f"\tList of links found:")
