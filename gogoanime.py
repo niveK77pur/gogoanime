@@ -244,4 +244,5 @@ os.makedirs(folder, exist_ok=True)
 with open(links_file, 'a') as f:
     f.write('\n'.join([ f'{link}\n    out={name}\n    referer={episode}'
         for name,link,episode in episodes['mp4']]))
+    f.write('\n')
     print(f"Links written to:\n   {links_file}")
