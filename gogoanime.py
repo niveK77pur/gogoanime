@@ -216,13 +216,6 @@ for n,episode in episodes['vidstream']:
             key=(lambda l: int(re.search(r"([0-9]+)P", l.text).group(1)))
             )
     link = link_maxres.find('a').get('href')
-    print(f"Link found for episode:\n\tEpisode: {episode}\n\tLink: {link}")
-    print(f"\tList of links found:")
-    for l in links:
-        print(f"\t\t{l}")
-    print(f"\tList of episode links found:")
-    for l in links_episodes:
-        print(f"\t\t{l}")
     resolution = re.search(r"[0-9]+P", link_maxres.text).group()
     name = f"{n}_{resolution}.mp4"
     episodes['mp4'].append((name,link,episode))
@@ -232,10 +225,6 @@ browser.quit()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #                              Write links to file
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-print("=== === === === ===")
-for name,link,episode in episodes['mp4']:
-    print(f"Entry to be added:\n\tName: {name}\n\tReferer: {episode}\n\tLink: {link}")
 
 # Create download directory (if non-existant) ----------------------------------
 os.makedirs(folder, exist_ok=True)
