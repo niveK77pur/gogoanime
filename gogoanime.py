@@ -212,9 +212,9 @@ for n,episode in episodes['vidstream']:
         print(f'Page written to {debug_html} for debugging.')
         sys.exit(2)
     # sort according to resolution text
-    link_maxres = sorted(links_episodes,
-            key=(lambda l: re.search(r"([0-9]+)P", l.text).group(1))
-            )[0]
+    link_maxres = max(links_episodes,
+            key=(lambda l: int(re.search(r"([0-9]+)P", l.text).group(1)))
+            )
     link = link_maxres.find('a').get('href')
     resolution = re.search(r"[0-9]+P", link_maxres.text).group()
     name = f"{n}_{resolution}.mp4"
@@ -233,4 +233,5 @@ os.makedirs(folder, exist_ok=True)
 with open(links_file, 'a') as f:
     f.write('\n'.join([ f'{link}\n    out={name}\n    referer={episode}'
         for name,link,episode in episodes['mp4']]))
+    f.write('\n')
     print(f"Links written to:\n   {links_file}")
