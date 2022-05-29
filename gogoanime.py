@@ -60,6 +60,10 @@ def getDownloadPageHTML(browser, url):
     except TimeoutException as error:
         print("Could not extract HTML for the following site. Timeout reached.")
         print(url)
+        debug_html = "/tmp/gogoanime.html"
+        with open(debug_html, 'w') as f:
+            f.write(str(BeautifulSoup(browser.page_source, "html.parser")))
+        print(f'Page written to {debug_html} for debugging.')
         raise
 
 #  Root URL of gogoanime -------------------------------------------------------
