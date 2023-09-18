@@ -1,3 +1,10 @@
+# ⚠️ Archived ⚠️
+
+As the commit history indicates, this project has been abandoned for quite a while.
+More information on why can be found in [this comment](https://github.com/niveK77pur/gogoanime/issues/11#issuecomment-1690119772). Long story short, circumventing CAPTCHA on gogoanime was becoming more and more tricky, until it eventually surpassed my expertise.
+
+Assuming you came here looking for a simple and nice download utility, I have personally moved on to [ani-cli](https://github.com/pystardust/ani-cli) which has been working great so I can highly recommend it! It does everything I intended this script to do at the core, and has many more neat features!
+
 # About
 
 This script extracts the MP4 video file links for episodes found on <www.gogoanime.so> (or wheverever this points to). All episodes for a whole season are automatically extracted. Usage is basically as follows; no quotes must be used here, check [Using the script](#using-the-script) further down for more details.
